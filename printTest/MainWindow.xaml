@@ -1,0 +1,170 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:printTest"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" x:Class="printTest.MainWindow"
+        mc:Ignorable="d"
+        Title="Модуль печати 3НДФЛ" Height="450" Width="960" Loaded="Window_Loaded" Closing="Window_Closing" Icon="/2.ico">
+    
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="27"/>
+
+        </Grid.RowDefinitions>
+        <Popup x:Name="myPopup" Placement="Absolute">
+            <Border Background="LightBlue" Margin="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>                        
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <StackPanel>
+                            <TextBlock Text="Сведение данных заверешено!" Padding="10" FontSize="16"/>
+                            <Label Name="labelCurrentData"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <StackPanel Name="buttonGrid" Orientation="Horizontal" >
+                            <Button Click="removeRowsNoAddress_Click"
+                                    Name="removeRowsNoAddress" Content="Удалить строки" Padding="5,5,5,5" Margin="5,5,5,5" Background="Red"/>
+                            <Button Click="printNoAddress_Click" 
+                                Name="printNoAddress" Content="Оставить строки" Padding="5,5,5,5" Margin="5,5,5,5" Background="Green"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+               
+                
+            </Border>
+
+        </Popup>
+        <Grid Grid.Row="0" Name="OneRowPanel">
+            <StackPanel Orientation="Horizontal">
+                
+                <Button Background="Coral" Padding="5,5,5,5" Margin="5,5,5,0"
+                x:Name="openDirectory" VerticalAlignment="Center" Content="Выбрать каталог" BorderBrush="#FF5E713F"
+                Click="openDirectory_Click"/>
+                <Separator/>
+                <Button VerticalAlignment="Center" Padding="5,5,5,5" Margin="5,5,5,0" Name="buttonOpenDBFile" Content="Выбрать файл БД" Background="Coral"
+                      IsEnabled="False"  Click="buttonOpenDBFile_Click"/>
+                <ComboBox VerticalAlignment="Center" Margin="0,0,5,0" 
+                x:Name="choosePrinter" MinWidth="200" SelectionChanged="choosePrinter_SelectionChanged" BorderBrush="#FF357134" >
+                    <ComboBox.Background>
+                        <LinearGradientBrush EndPoint="0,1">
+                            <GradientStop Color="#FFF0F0F0"/>
+                            <GradientStop Color="#FFD1D2D1" Offset="1"/>
+                        </LinearGradientBrush>
+                    </ComboBox.Background>
+                </ComboBox>
+                <Separator/>
+                <Label x:Name="labelStatusPrinter"  MinWidth="150" VerticalAlignment="Center" Content="Статус принтера: Не определено"
+                />
+                <Separator/>
+                <Button 
+                x:Name="Print" Content="Печать" Padding="5,5,5,5" VerticalAlignment="Center"  BorderBrush="#FF738851" Margin="5,5,5,0" Click="Print_Click"/>
+                <Separator/>
+                <Button IsEnabled="False" Margin="5,5,5,0" Padding="5,5,5,5" x:Name="Pause" Content="Пауза"  VerticalAlignment="Center" BorderBrush="#FF6E824C" Click="Pause_Click"
+                />
+                <Button Margin="5,5,5,0" Padding="5,5,5,5" x:Name="buttonHelp" Content="Помощь"  VerticalAlignment="Center" BorderBrush="#FF6E824C"
+  />
+                <Label Name="version"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Name="TwoRowPanel">
+            <Expander Header="Настройки">
+                <ToolBar>
+                    <GroupBox Header="Настройки листа" Background="#FFDBF3BA">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" >
+                                <Label Content="Тип печати"></Label>
+                                <ComboBox x:Name="printTwoSide"  Width="100" SelectedIndex="0" Background="#FFBDF7D0" BorderBrush="#FF357134">
+                                    <ComboBoxItem x:Name="OneSide" Content="односторонняя"/>
+                                    <ComboBoxItem x:Name="TwoSide" Content="двухсторонняя"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" >
+                                <Label Content="Количество страниц"></Label>
+                                <ComboBox Margin="5,5,5,0" x:Name="printTwoList" Width="100" SelectedIndex="0" Background="#FFBDF7D0" BorderBrush="#FF357134">
+                                    <ComboBoxItem x:Name="OneList" Content="1 на листе"/>
+                                    <ComboBoxItem x:Name="TwoList" Content="2 на листе"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <Separator/>
+                    <GroupBox Header="Настройки реестра и конверта" Background="#FFF4F994">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Margin="5,5,5,0" Width="200" Content="Количество докумнтов в реестре"/>
+                                <TextBox Margin="5,5,5,0" PreviewTextInput="docCount_PreviewTextInput" x:Name="docCount"  Width="50" Text="10" BorderBrush="#FF357134" Background="#FFBDF7D0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Margin="5,5,5,0" x:Name="type" Width="100" Content="Тип конверта"/>
+                                <ComboBox x:Name="typeLetter"  Width="100" SelectedIndex="0" Background="#FFBDF7D0" BorderBrush="#FF357134">
+                                    <ComboBoxItem x:Name="c5" Content="C5"/>
+                                    <ComboBoxItem x:Name="dl" Content="DL"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <Separator/>
+                    <GroupBox Header="Настройки печати" Background="#FFF3D97E">
+                        <StackPanel>
+                            <CheckBox Margin="5,5,5,0" x:Name="printNaRow" Content="Печать строк без адреса" IsChecked="False" />
+                            <StackPanel Orientation="Horizontal">
+                                <Label>Печать с:</Label>
+                                <TextBox x:Name="printStart" Width="50" PreviewTextInput="printStart_PreviewTextInput"/>
+                                <Label>по:</Label>
+                                <TextBox x:Name="printEnd" Width="50" PreviewTextInput="printEnd_PreviewTextInput"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    
+
+                    
+                </ToolBar>
+            </Expander>
+            
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                
+                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="5">
+                        <GridSplitter.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FFB7EDE2"/>
+                                <GradientStop Color="#FF0DF5C5" Offset="0.366"/>
+                            </LinearGradientBrush>
+                        </GridSplitter.Background>
+                    </GridSplitter>
+                
+                <Grid Grid.Column="0">
+                    <DataGrid x:Name="DataGridView1" CanUserAddRows="False" CanUserDeleteRows="False"/>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Wpf:WebView2 Name="webview2panel" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" />
+                </Grid>
+            </Grid>
+
+        </Grid>
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal">               
+                <Label Name="statusBarLabel" Content="Начните с выбора каталога"/>
+                <Label Name="statusBarAllLabel"/>
+                <ProgressBar x:Name="ProgressBar1" Width=" 150" Height="18"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
